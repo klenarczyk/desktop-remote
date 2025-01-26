@@ -72,13 +72,13 @@ function App() {
 
       {/* Buttons for controlling various actions */}
       <div className="flex items-center justify-center space-x-12 w-full px-10 select-none my-5">
-        <IncrementButton property="navigation" text="nav" socket={socket} />
+        <IncrementButton property="volume" text="vol" socket={socket} />
         <div className="flex flex-col items-center justify-center space-y-4">
           <Button property="fullscreen" text={null} icon action={null} />
           <Button property="volume" text={null} icon action={"mute"} />
           <Button property="return" text={null} icon action={null} />
         </div>
-        <IncrementButton property="volume" text="vol" socket={socket} />
+        <IncrementButton property="navigation" text="nav" socket={socket} />
       </div>
 
       {/* Mouse Movements and other actions */}
