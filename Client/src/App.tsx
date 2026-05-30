@@ -35,6 +35,13 @@ function App() {
                 </button>
                 <button onClick={() => RemoteApi.mouse.click()}>Click</button>
             </div>
+
+            <h2>System</h2>
+            <div>
+                <button onClick={() => RemoteApi.system.turnOff()}>
+                    Turn Off
+                </button>
+            </div>
         </div>
     );
 }

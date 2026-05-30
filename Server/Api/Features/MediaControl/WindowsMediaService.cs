@@ -3,7 +3,7 @@ using Windows.Media.Control;
 
 namespace Api.Features.MediaControl;
 
-[SupportedOSPlatform("windows")]
+[SupportedOSPlatform("windows10.0.17763.0")]
 public class WindowsMediaService : IMediaService
 {
     private static async Task<GlobalSystemMediaTransportControlsSession?> GetCurrentSessionAsync()

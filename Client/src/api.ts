@@ -1,5 +1,5 @@
-const IP = import.meta.env.VITE_HOST_IPV4;
-const API_BASE = `http://${IP}:7546/api`;
+const isDev = import.meta.env.DEV;
+const API_BASE = isDev ? `http://${window.location.hostname}:7546/api` : "/api";
 
 export const RemoteApi = {
     media: {
@@ -22,5 +22,9 @@ export const RemoteApi = {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ dx, dy }),
             }),
+    },
+
+    system: {
+        turnOff: () => fetch(`${API_BASE}/system/turn-off`, { method: "POST" }),
     },
 };

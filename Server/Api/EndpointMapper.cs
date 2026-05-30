@@ -64,5 +64,15 @@ public static class EndpointMapper
             service.MoveMouseBy(req.Dx, req.Dy);
             return Results.Ok();
         });
+        
+        // --- System ---
+        var system = api.MapGroup("/system");
+
+        system.MapPost("/turn-off", () =>
+        {
+            Application.Exit();
+            Environment.Exit(0);
+            return Results.Ok();
+        });
     }
 }
