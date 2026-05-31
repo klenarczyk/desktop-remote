@@ -9,4 +9,19 @@ public class RemoteHub(IMouseService mouseService) : Hub
     {
         mouseService.MoveMouseBy(dx, dy);
     }
+
+    public void LeftClick()
+    {
+        mouseService.LeftClick();
+    }
+
+    public void RightClick()
+    {
+        mouseService.RightClick();
+    }
+
+    public void Scroll(int dy)
+    {
+        mouseService.ScrollBy(dy);
+    }
 }

@@ -23,4 +23,9 @@ public class WindowsMouseService : IMouseService
         User32.mouse_event(User32.MOUSEEVENTF.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
         User32.mouse_event(User32.MOUSEEVENTF.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
     }
+
+    public void ScrollBy(int dy)
+    {
+        User32.mouse_event(User32.MOUSEEVENTF.MOUSEEVENTF_WHEEL, 0, 0, dy, 0);
+    }
 }
