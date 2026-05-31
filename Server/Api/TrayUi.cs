@@ -39,7 +39,7 @@ public class TrayUi : ApplicationContext
         _trayIcon = new NotifyIcon
         {
             Icon = new Icon(iconStream!),
-            Text = "Remote Control URL",
+            Text = "Remote Control",
             Visible = true,
             ContextMenuStrip = new ContextMenuStrip()
         };
