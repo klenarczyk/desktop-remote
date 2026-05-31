@@ -2,9 +2,12 @@ using Api;
 using Api.Features.AudioControl;
 using Api.Features.MediaControl;
 using Api.Features.MouseControl;
+using Api.Hubs;
 using Timer = System.Timers.Timer;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
 
 builder.WebHost.UseUrls("http://0.0.0.0:7546");
 
@@ -22,9 +25,10 @@ else
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy => policy
-        .AllowAnyOrigin()
+        .SetIsOriginAllowed(_ => true)
         .AllowAnyMethod()
-        .AllowAnyHeader());
+        .AllowAnyHeader()
+        .AllowCredentials());
 });
 
 // ---
@@ -32,7 +36,7 @@ builder.Services.AddCors(options =>
 var timeoutDuration = TimeSpan.FromHours(2).TotalMilliseconds;
 
 var idleTimer = new Timer(timeoutDuration);
-idleTimer.Elapsed += (sender, e) =>
+idleTimer.Elapsed += (_, _) =>
 {
     Application.Exit();
     Environment.Exit(0);
@@ -46,7 +50,7 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-app.Use(async (context, next) =>
+app.Use(async (_, next) =>
 {
     idleTimer.Stop();
     idleTimer.Start();
@@ -54,7 +58,7 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.Use(async (context, next) =>
+app.Use(async (_, next) =>
 {
     TrayUi.HidePopup();
     await next();
@@ -62,6 +66,7 @@ app.Use(async (context, next) =>
 
 app.UseStaticFiles();
 
+app.MapHub<RemoteHub>("/remoteHub");
 app.MapRemoteEndpoints();
 app.MapFallbackToFile("index.html");
 

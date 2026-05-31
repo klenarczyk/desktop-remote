@@ -1,5 +1,4 @@
 import {
-    MousePointer2,
     Pause,
     Play,
     Power,
@@ -10,17 +9,23 @@ import {
     VolumeX,
 } from "lucide-react";
 import { RemoteApi } from "./api";
-import { RemoteButton } from "./components/RemoteButton";
+import RemoteButton from "./components/RemoteButton";
+import Trackpad from "./components/Trackpad";
+import useRemoteServer from "./hooks/useRemoteServer";
 
 function App() {
+    const { connection, isConnected } = useRemoteServer();
+
     return (
         <div className="flex flex-col h-dvh max-w-md mx-auto p-6 gap-8">
             {/* Header */}
             <header className="flex justify-between items-center mt-4">
                 <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <div
+                        className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`}
+                    />
                     <h1 className="text-zinc-400 text-sm font-medium tracking-wider">
-                        Connected
+                        {isConnected ? "Connected" : "Connecting..."}
                     </h1>
                 </div>
 
@@ -28,6 +33,7 @@ function App() {
                     variant="danger"
                     className="w-12 h-12 rounded-full"
                     onClick={() => RemoteApi.system.turnOff()}
+                    disabled={!isConnected}
                 >
                     <Power size={20} />
                 </RemoteButton>
@@ -39,6 +45,7 @@ function App() {
                     variant="ghost"
                     className="h-16 flex-1"
                     onClick={() => RemoteApi.audio.down()}
+                    disabled={!isConnected}
                 >
                     <Volume1 size={28} />
                 </RemoteButton>
@@ -49,6 +56,7 @@ function App() {
                     variant="ghost"
                     className="h-16 flex-1"
                     onClick={() => RemoteApi.audio.mute()}
+                    disabled={!isConnected}
                 >
                     <VolumeX size={24} />
                 </RemoteButton>
@@ -59,6 +67,7 @@ function App() {
                     variant="ghost"
                     className="h-16 flex-1"
                     onClick={() => RemoteApi.audio.up()}
+                    disabled={!isConnected}
                 >
                     <Volume2 size={28} />
                 </RemoteButton>
@@ -69,6 +78,7 @@ function App() {
                 <RemoteButton
                     className="h-24 text-zinc-400 rounded-2xl"
                     onClick={() => RemoteApi.media.prev()}
+                    disabled={!isConnected}
                 >
                     <SkipBack size={32} />
                 </RemoteButton>
@@ -76,6 +86,7 @@ function App() {
                 <RemoteButton
                     className="h-24 rounded-2xl text-zinc-400"
                     onClick={() => RemoteApi.media.toggle()}
+                    disabled={!isConnected}
                 >
                     <div className="flex gap-1">
                         <Play size={32} fill="currentColor" />
@@ -86,19 +97,14 @@ function App() {
                 <RemoteButton
                     className="h-24 text-zinc-400 rounded-2xl"
                     onClick={() => RemoteApi.media.next()}
+                    disabled={!isConnected}
                 >
                     <SkipForward size={32} />
                 </RemoteButton>
             </section>
 
-            {/* Trackpad (TODO) */}
-            <section className="flex-1 mt-4">
-                <div className="h-full bg-zinc-900 rounded-3xl border border-zinc-800/50 flex flex-col items-center justify-center opacity-50 relative overflow-hidden">
-                    <MousePointer2 size={48} className="text-zinc-700 mb-4" />
-                    <p className="text-zinc-500 font-medium">
-                        Trackpad Area (TODO)
-                    </p>
-                </div>
+            <section className="flex-1 my-4">
+                <Trackpad connection={connection} />
             </section>
         </div>
     );

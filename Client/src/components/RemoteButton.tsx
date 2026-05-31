@@ -5,16 +5,19 @@ interface Props {
     children: ReactNode;
     variant?: "primary" | "danger" | "ghost";
     className?: string;
+    disabled?: boolean;
 }
 
-export function RemoteButton({
+export default function RemoteButton({
     onClick,
     children,
     variant = "primary",
     className = "",
+    disabled = false,
 }: Props) {
-    const baseStyles =
-        "flex items-center justify-center rouded-2xl transition-all duration-100 active:scale-90 touch-manipulation";
+    const baseStyles = `flex items-center justify-center rouded-2xl transition-all duration-100 active:scale-90 touch-manipulation ${
+        disabled ? "opacity-30 pointer-events-none" : "active:scale-90"
+    }`;
 
     const variants = {
         primary:
@@ -23,12 +26,16 @@ export function RemoteButton({
         ghost: "bg-transparent text-zinc-400 active:bg-zinc-800/50",
     };
 
-    const handlePress = () => onClick();
+    const handlePress = () => {
+        if (disabled) return;
+        onClick();
+    };
 
     return (
         <button
             onClick={handlePress}
             className={`${baseStyles} ${variants[variant]} ${className}`}
+            disabled={disabled}
         >
             {children}
         </button>
