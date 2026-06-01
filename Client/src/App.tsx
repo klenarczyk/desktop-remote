@@ -12,6 +12,7 @@ import { RemoteApi } from "./api";
 import RemoteButton from "./components/RemoteButton";
 import Trackpad from "./components/Trackpad";
 import useRemoteServer from "./hooks/useRemoteServer";
+import Keyboard from "./components/Keyboard";
 
 function App() {
     const { connection, isConnected } = useRemoteServer();
@@ -29,14 +30,18 @@ function App() {
                     </h1>
                 </div>
 
-                <RemoteButton
-                    variant="danger"
-                    className="w-12 h-12 rounded-full"
-                    onClick={() => RemoteApi.system.turnOff()}
-                    disabled={!isConnected}
-                >
-                    <Power size={20} />
-                </RemoteButton>
+                <div className="flex gap-2">
+                    <Keyboard connection={connection} disabled={!isConnected} />
+
+                    <RemoteButton
+                        variant="danger"
+                        className="w-12 h-12 rounded-full"
+                        onClick={() => RemoteApi.system.turnOff()}
+                        disabled={!isConnected}
+                    >
+                        <Power size={20} />
+                    </RemoteButton>
+                </div>
             </header>
 
             {/* Volume */}

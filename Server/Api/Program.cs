@@ -1,5 +1,6 @@
 using Api;
 using Api.Features.AudioControl;
+using Api.Features.KeyboardControl;
 using Api.Features.MediaControl;
 using Api.Features.MouseControl;
 using Api.Hubs;
@@ -16,6 +17,7 @@ if (OperatingSystem.IsWindows())
     builder.Services.AddSingleton<IMediaService, WindowsMediaService>();
     builder.Services.AddSingleton<IAudioService, WindowsAudioService>();
     builder.Services.AddSingleton<IMouseService, WindowsMouseService>();
+    builder.Services.AddSingleton<IKeyboardService, WindowsKeyboardService>();
 }
 else
 {

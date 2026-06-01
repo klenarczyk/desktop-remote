@@ -1,9 +1,10 @@
-﻿using Api.Features.MouseControl;
+﻿using Api.Features.KeyboardControl;
+using Api.Features.MouseControl;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Api.Hubs;
 
-public class RemoteHub(IMouseService mouseService) : Hub
+public class RemoteHub(IMouseService mouseService, IKeyboardService keyboardService) : Hub
 {
     public void MoveMouse(int dx, int dy)
     {
@@ -23,5 +24,10 @@ public class RemoteHub(IMouseService mouseService) : Hub
     public void Scroll(int dy)
     {
         mouseService.ScrollBy(dy);
+    }
+
+    public void TypeText(string input)
+    {
+        keyboardService.TypeText(input);
     }
 }
