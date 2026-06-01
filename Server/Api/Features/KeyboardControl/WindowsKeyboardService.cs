@@ -11,12 +11,12 @@ public class WindowsKeyboardService : IKeyboardService
     {
         switch (input)
         {
-            case "{BACKSPACE}":
-                SendVirtualKey((ushort)User32.VK.VK_BACK);
-                return;
-            case "{ENTER}":
-                SendVirtualKey((ushort)User32.VK.VK_RETURN);
-                return;
+            case "{BACKSPACE}": SendVirtualKey((ushort)User32.VK.VK_BACK); return;
+            case "{ENTER}": SendVirtualKey((ushort)User32.VK.VK_RETURN); return;
+            case "{ESC}": SendVirtualKey((ushort)User32.VK.VK_ESCAPE); return;
+            case "{LEFT}": SendVirtualKey((ushort)User32.VK.VK_LEFT); return;
+            case "{RIGHT}": SendVirtualKey((ushort)User32.VK.VK_RIGHT); return;
+            case "{BROWSER_BACK}": SendVirtualKey((ushort)User32.VK.VK_BROWSER_BACK); return;
         }
 
         foreach (var c in input)

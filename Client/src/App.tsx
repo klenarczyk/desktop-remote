@@ -1,9 +1,12 @@
 import {
+    Bookmark,
+    Maximize,
     Pause,
     Play,
     Power,
-    SkipBack,
-    SkipForward,
+    RotateCcw,
+    RotateCw,
+    Undo2,
     Volume1,
     Volume2,
     VolumeX,
@@ -17,10 +20,15 @@ import Keyboard from "./components/Keyboard";
 function App() {
     const { connection, isConnected } = useRemoteServer();
 
+    const sendKey = (key: string) => {
+        if (!connection) return;
+        connection.invoke("TypeText", key).catch(console.error);
+    };
+
     return (
-        <div className="flex flex-col h-dvh max-w-md mx-auto p-6 gap-8">
+        <div className="flex flex-col h-dvh max-w-md mx-auto p-6 gap-6">
             {/* Header */}
-            <header className="flex justify-between items-center mt-4">
+            <header className="flex justify-between items-center mt-2">
                 <div className="flex items-center gap-2">
                     <div
                         className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`}
@@ -31,7 +39,14 @@ function App() {
                 </div>
 
                 <div className="flex gap-2">
-                    <Keyboard connection={connection} disabled={!isConnected} />
+                    <RemoteButton
+                        variant="ghost"
+                        className="w-12 h-12 rounded-full border border-zinc-800"
+                        onClick={() => alert("TODO: Open Saved Sites Modal")}
+                        disabled={!isConnected}
+                    >
+                        <Bookmark size={20} className="text-zinc-400" />
+                    </RemoteButton>
 
                     <RemoteButton
                         variant="danger"
@@ -44,71 +59,102 @@ function App() {
                 </div>
             </header>
 
-            {/* Volume */}
-            <section className="bg-zinc-900 rounded-3xl p-2 flex items-center justify-between shadow-xl shadow-black/40">
-                <RemoteButton
-                    variant="ghost"
-                    className="h-16 flex-1"
-                    onClick={() => RemoteApi.audio.down()}
-                    disabled={!isConnected}
-                >
-                    <Volume1 size={28} />
-                </RemoteButton>
-
-                <div className="w-px h-8 bg-zinc-800" />
-
-                <RemoteButton
-                    variant="ghost"
-                    className="h-16 flex-1"
-                    onClick={() => RemoteApi.audio.mute()}
-                    disabled={!isConnected}
-                >
-                    <VolumeX size={24} />
-                </RemoteButton>
-
-                <div className="w-px h-8 bg-zinc-800" />
-
-                <RemoteButton
-                    variant="ghost"
-                    className="h-16 flex-1"
-                    onClick={() => RemoteApi.audio.up()}
-                    disabled={!isConnected}
-                >
-                    <Volume2 size={28} />
-                </RemoteButton>
-            </section>
-
             {/* Media */}
-            <section className="grid grid-cols-3 gap-4 mt-4">
+            <section className="flex flex-col gap-4 mt-2">
+                {/* Volume */}
+                <section className="bg-zinc-900 rounded-full p-1 flex items-center justify-between shadow-lg shadow-black/20 border border-zinc-800/50">
+                    <RemoteButton
+                        variant="ghost"
+                        className="h-12 flex-1 rounded-full"
+                        onClick={() => RemoteApi.audio.down()}
+                        disabled={!isConnected}
+                    >
+                        <Volume1 size={24} className="text-zinc-400" />
+                    </RemoteButton>
+
+                    <div className="w-px h-6 bg-zinc-800" />
+
+                    <RemoteButton
+                        variant="ghost"
+                        className="h-12 flex-1 rounded-full"
+                        onClick={() => RemoteApi.audio.mute()}
+                        disabled={!isConnected}
+                    >
+                        <VolumeX size={20} className="text-zinc-500" />
+                    </RemoteButton>
+
+                    <div className="w-px h-6 bg-zinc-800" />
+
+                    <RemoteButton
+                        variant="ghost"
+                        className="h-12 flex-1 rounded-full"
+                        onClick={() => RemoteApi.audio.up()}
+                        disabled={!isConnected}
+                    >
+                        <Volume2 size={24} className="text-zinc-400" />
+                    </RemoteButton>
+                </section>
+
+                {/* Media controls */}
+                <section className="grid grid-cols-3 gap-3">
+                    <RemoteButton
+                        className="h-20 text-zinc-400 bg-zinc-900 rounded-3xl border border-zinc-800/50"
+                        onClick={() => sendKey("{LEFT}")}
+                        disabled={!isConnected}
+                    >
+                        <RotateCcw size={24} />
+                    </RemoteButton>
+
+                    <RemoteButton
+                        className="h-20 bg-zinc-900 text-zinc-500 rounded-3xl"
+                        onClick={() => RemoteApi.media.toggle()}
+                        disabled={!isConnected}
+                    >
+                        <div className="flex gap-1">
+                            <Play size={28} fill="currentColor" />
+                            <Pause size={28} fill="currentColor" />
+                        </div>
+                    </RemoteButton>
+
+                    <RemoteButton
+                        className="h-20 text-zinc-400 bg-zinc-900 rounded-3xl border border-zinc-800/50"
+                        onClick={() => sendKey("{RIGHT}")}
+                        disabled={!isConnected}
+                    >
+                        <RotateCw size={24} />
+                    </RemoteButton>
+                </section>
+            </section>
+
+            {/* Toolbar */}
+            <section className="flex gap-2 mt-4">
                 <RemoteButton
-                    className="h-24 text-zinc-400 rounded-2xl"
-                    onClick={() => RemoteApi.media.prev()}
+                    variant="ghost"
+                    className="h-14 flex-1 bg-zinc-900 rounded-2xl border border-zinc-800/50"
+                    onClick={() => sendKey("{BROWSER_BACK}")}
                     disabled={!isConnected}
                 >
-                    <SkipBack size={32} />
+                    <Undo2 size={22} className="text-zinc-400" />
                 </RemoteButton>
 
-                <RemoteButton
-                    className="h-24 rounded-2xl text-zinc-400"
-                    onClick={() => RemoteApi.media.toggle()}
+                <Keyboard
+                    connection={connection}
                     disabled={!isConnected}
-                >
-                    <div className="flex gap-1">
-                        <Play size={32} fill="currentColor" />
-                        <Pause size={32} fill="currentColor" />
-                    </div>
-                </RemoteButton>
+                    className="h-14 flex-1 bg-zinc-900 rounded-2xl border border-zinc-800/50"
+                />
 
                 <RemoteButton
-                    className="h-24 text-zinc-400 rounded-2xl"
-                    onClick={() => RemoteApi.media.next()}
+                    variant="ghost"
+                    className="h-14 flex-1 bg-zinc-900 rounded-2xl border border-zinc-800/50"
+                    onClick={() => sendKey("f")}
                     disabled={!isConnected}
                 >
-                    <SkipForward size={32} />
+                    <Maximize size={22} className="text-zinc-400" />
                 </RemoteButton>
             </section>
 
-            <section className="flex-1 my-4">
+            {/* Trackpad */}
+            <section className="flex-1 mb-2">
                 <Trackpad connection={connection} />
             </section>
         </div>

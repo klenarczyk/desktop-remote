@@ -15,7 +15,7 @@ export default function RemoteButton({
     className = "",
     disabled = false,
 }: Props) {
-    const baseStyles = `flex items-center justify-center rouded-2xl transition-all duration-100 active:scale-90 touch-manipulation ${
+    const baseStyles = `flex items-center justify-center rounded-2xl outline-none transition-all duration-100 active:scale-90 touch-manipulation ${
         disabled ? "opacity-30 pointer-events-none" : "active:scale-90"
     }`;
 

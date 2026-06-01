@@ -6,9 +6,14 @@ import { KeyboardIcon } from "lucide-react";
 interface KeyboardProps {
     connection: signalR.HubConnection | null;
     disabled: boolean;
+    className?: string;
 }
 
-export default function Keyboard({ connection, disabled }: KeyboardProps) {
+export default function Keyboard({
+    connection,
+    disabled,
+    className,
+}: KeyboardProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [inputValue, setInputValue] = useState(" "); // Dummy space to handle backspace
 
@@ -59,7 +64,7 @@ export default function Keyboard({ connection, disabled }: KeyboardProps) {
 
             <RemoteButton
                 variant="ghost"
-                className="w-12 h-12 rounded-full border border-zinc-800"
+                className={className}
                 disabled={disabled}
                 onClick={summonKeyboard}
             >
