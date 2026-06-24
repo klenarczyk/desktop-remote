@@ -1,6 +1,6 @@
 import {
     Bookmark,
-    Maximize,
+    Minimize,
     Pause,
     Play,
     Power,
@@ -137,20 +137,20 @@ function App() {
                     <Undo2 size={22} className="text-zinc-400" />
                 </RemoteButton>
 
+                <RemoteButton
+                    variant="ghost"
+                    className="h-14 flex-1 bg-zinc-900 rounded-2xl border border-zinc-800/50"
+                    onClick={() => sendKey("{ESC}")}
+                    disabled={!isConnected}
+                >
+                    <Minimize size={22} className="text-zinc-400" />
+                </RemoteButton>
+
                 <Keyboard
                     connection={connection}
                     disabled={!isConnected}
                     className="h-14 flex-1 bg-zinc-900 rounded-2xl border border-zinc-800/50"
                 />
-
-                <RemoteButton
-                    variant="ghost"
-                    className="h-14 flex-1 bg-zinc-900 rounded-2xl border border-zinc-800/50"
-                    onClick={() => sendKey("f")}
-                    disabled={!isConnected}
-                >
-                    <Maximize size={22} className="text-zinc-400" />
-                </RemoteButton>
             </section>
 
             {/* Trackpad */}

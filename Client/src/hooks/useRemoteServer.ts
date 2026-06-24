@@ -3,7 +3,7 @@ import * as signalR from "@microsoft/signalr";
 
 const isDev = import.meta.env.DEV;
 const HUB_URL = isDev
-    ? `http://${window.location.hostname}:7546/remoteHub`
+    ? `http://${window.location.hostname}:${import.meta.env.VITE_SERVER_PORT}/remoteHub`
     : "/remoteHub";
 
 export default function useRemoteServer() {

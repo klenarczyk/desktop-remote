@@ -6,11 +6,13 @@ using Api.Features.MouseControl;
 using Api.Hubs;
 using Timer = System.Timers.Timer;
 
+const int serverPort = 7546;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 
-builder.WebHost.UseUrls("http://0.0.0.0:7546");
+builder.WebHost.UseUrls($"http://0.0.0.0:{serverPort}");
 
 if (OperatingSystem.IsWindows())
 {
@@ -73,7 +75,7 @@ app.MapRemoteEndpoints();
 app.MapFallbackToFile("index.html");
 
 var localIp = NetworkHelper.GetLocalIPv4();
-var url = $"http://{localIp}:7546";
+var url = $"http://{localIp}:{serverPort}";
 
 _ = app.RunAsync();
 

@@ -1,5 +1,7 @@
 const isDev = import.meta.env.DEV;
-const API_BASE = isDev ? `http://${window.location.hostname}:7546/api` : "/api";
+const API_BASE = isDev
+    ? `http://${window.location.hostname}:${import.meta.env.VITE_SERVER_PORT}/api`
+    : "/api";
 
 export const RemoteApi = {
     media: {
