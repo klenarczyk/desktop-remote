@@ -1,15 +1,22 @@
 using Api;
+using Api.Data;
 using Api.Features.AudioControl;
 using Api.Features.KeyboardControl;
 using Api.Features.MediaControl;
 using Api.Features.MouseControl;
 using Api.Hubs;
+using Api.Security;
+using Microsoft.EntityFrameworkCore;
 using Timer = System.Timers.Timer;
 
 const int serverPort = 7546;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var sessionState = new SessionState();
+builder.Services.AddSingleton(sessionState);
+
+builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddSignalR();
 
 builder.WebHost.UseUrls($"http://0.0.0.0:{serverPort}");
@@ -52,19 +59,53 @@ idleTimer.Start();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
+
 app.UseCors("AllowAll");
 
 app.Use(async (_, next) =>
 {
     idleTimer.Stop();
     idleTimer.Start();
-
     await next();
 });
 
 app.Use(async (_, next) =>
 {
     TrayUi.HidePopup();
+    await next();
+});
+
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value;
+
+    if (path == "/" || path.StartsWith("/assets") || path == "/api/pair")
+    {
+        await next();
+        return;
+    }
+    
+    var deviceId = context.Request.Headers["X-Device-Id"].FirstOrDefault()
+                   ?? context.Request.Query["deviceId"].FirstOrDefault();
+
+    if (string.IsNullOrEmpty(deviceId))
+    {
+        context.Response.StatusCode = 401;
+        return;
+    }
+    
+    var db = context.RequestServices.GetRequiredService<AppDbContext>();
+    if (!await db.TrustedDevices.AnyAsync(d => d.DeviceId == deviceId))
+    {
+        context.Response.StatusCode = 401;
+        return;
+    }
+    
     await next();
 });
 
@@ -82,4 +123,4 @@ _ = app.RunAsync();
 Application.EnableVisualStyles();
 Application.SetCompatibleTextRenderingDefault(false);
 
-Application.Run(new TrayUi(url));
+Application.Run(new TrayUi(url, sessionState.PairingPin));

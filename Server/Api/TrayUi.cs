@@ -8,7 +8,7 @@ public class TrayUi : ApplicationContext
     private readonly Form _qrPopup;
     private static TrayUi? _instance;
 
-    public TrayUi(string url)
+    public TrayUi(string url, string pairingPin)
     {
         _instance = this;
         
@@ -19,7 +19,7 @@ public class TrayUi : ApplicationContext
 
         _qrPopup = new Form
         {
-            Text = "Remote URL",
+            Text = $"Remote URL | Pin: {pairingPin}",
             Size = new Size(250, 250),
             StartPosition = FormStartPosition.CenterScreen,
             FormBorderStyle = FormBorderStyle.FixedToolWindow,
@@ -44,8 +44,11 @@ public class TrayUi : ApplicationContext
             ContextMenuStrip = new ContextMenuStrip()
         };
         
+        var trayPairingPin = _trayIcon.ContextMenuStrip.Items.Add($"Pairing Pin: {pairingPin}", null);
         _trayIcon.ContextMenuStrip.Items.Add("Show QR Code", null, (s, e) => _qrPopup.Show());
         _trayIcon.ContextMenuStrip.Items.Add("Exit", null, (s, e) => ExitApp());
+        
+        trayPairingPin.Enabled = false;
         
         _qrPopup.Show();
         

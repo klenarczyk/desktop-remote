@@ -1,8 +1,13 @@
-﻿using Api.Features.AudioControl;
+﻿using Api.Data;
+using Api.Features.AudioControl;
 using Api.Features.MediaControl;
 using Api.Features.MouseControl;
+using Api.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api;
+
+public record PairRequest(string DeviceId, string Pin);
 
 public static class EndpointMapper
 {
@@ -72,6 +77,21 @@ public static class EndpointMapper
         {
             Application.Exit();
             Environment.Exit(0);
+            return Results.Ok();
+        });
+        
+        // Pairing
+        api.MapPost("/pair", async (PairRequest req, AppDbContext db, SessionState state) =>
+        {
+            if (req.Pin != state.PairingPin) 
+                return Results.Unauthorized();
+
+            if (!await db.TrustedDevices.AnyAsync(d => d.DeviceId == req.DeviceId))
+            {
+                db.TrustedDevices.Add(new TrustedDevice { DeviceId = req.DeviceId });
+                await db.SaveChangesAsync();
+            }
+
             return Results.Ok();
         });
     }
