@@ -19,6 +19,7 @@ export default function Keyboard({
 
     const summonKeyboard = () => {
         if (disabled || !inputRef.current) return;
+        setInputValue(" ");
         inputRef.current.focus();
     };
 
