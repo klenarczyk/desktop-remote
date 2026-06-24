@@ -18,6 +18,8 @@ public static class EndpointMapper
     {
         var api = app.MapGroup("/api");
         
+        api.MapGet("/ping", () => Task.FromResult(Results.Ok()));
+        
         // --- Media ---
         var media = api.MapGroup("/media");
 
@@ -80,8 +82,7 @@ public static class EndpointMapper
             return Results.Ok();
         });
         
-        // Pairing
-        api.MapPost("/pair", async (PairRequest req, AppDbContext db, SessionState state) =>
+        system.MapPost("/pair", async (PairRequest req, AppDbContext db, SessionState state) =>
         {
             if (req.Pin != state.PairingPin) 
                 return Results.Unauthorized();

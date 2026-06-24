@@ -84,7 +84,7 @@ app.Use(async (context, next) =>
 {
     var path = context.Request.Path.Value;
 
-    if (path == "/" || path.StartsWith("/assets") || path == "/api/pair")
+    if (path == "/" || path!.StartsWith("/assets") || path == "/api/system/pair")
     {
         await next();
         return;

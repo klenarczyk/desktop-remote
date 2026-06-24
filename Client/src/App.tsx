@@ -16,14 +16,53 @@ import RemoteButton from "./components/RemoteButton";
 import Trackpad from "./components/Trackpad";
 import useRemoteServer from "./hooks/useRemoteServer";
 import Keyboard from "./components/Keyboard";
+import { useEffect, useState } from "react";
+import DevicePairing from "./components/DevicePairing";
 
 function App() {
     const { connection, isConnected } = useRemoteServer();
+
+    const [isPinging, setIsPinging] = useState(true);
+    const [isAuthorized, setisAuthorized] = useState(false);
+
+    useEffect(() => {
+        RemoteApi.ping()
+            .then((res) => {
+                if (res.status === 401) {
+                    setisAuthorized(false);
+                } else {
+                    setisAuthorized(true);
+                }
+            })
+            .catch(() => {
+                // Network error, show the default UI
+                setisAuthorized(true);
+            })
+            .finally(() => setIsPinging(false));
+    }, []);
 
     const sendKey = (key: string) => {
         if (!connection) return;
         connection.invoke("TypeText", key).catch(console.error);
     };
+
+    if (isPinging) {
+        return (
+            <div className="fixed inset-0 min-h-screen bg-zinc-950 flex flex-col items-center justify-center gap-6 z-50">
+                <div className="relative flex h-4 w-4">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-600 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-zinc-500"></span>
+                </div>
+                <p className="text-zinc-500 text-sm font-medium tracking-widest">
+                    Checking in with the server
+                </p>
+            </div>
+        );
+    }
+
+    if (!isAuthorized) {
+        return <DevicePairing onSuccess={() => setisAuthorized(true)} />;
+    }
 
     return (
         <div className="flex flex-col h-dvh max-w-md mx-auto p-6 gap-6">
