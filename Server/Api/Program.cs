@@ -107,6 +107,7 @@ app.Use(async (context, next) =>
     }
     
     await next();
+    return;
 });
 
 app.UseStaticFiles();

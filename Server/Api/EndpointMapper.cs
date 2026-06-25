@@ -1,4 +1,5 @@
-﻿using Api.Data;
+﻿using System.Diagnostics;
+using Api.Data;
 using Api.Features.AudioControl;
 using Api.Features.MediaControl;
 using Api.Features.MouseControl;
@@ -7,12 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api;
 
-public record PairRequest(string DeviceId, string Pin);
-
 public static class EndpointMapper
 {
-    public record MouseMoveRequest(int Dx, int Dy);
-    public record VolumeSetRequest(float Level);
+    record PairRequest(string DeviceId, string Pin);
+    record MouseMoveRequest(int Dx, int Dy);
+    record LaunchRequest(string Url);
     
     public static void MapRemoteEndpoints(this IEndpointRouteBuilder app)
     {
@@ -70,6 +70,50 @@ public static class EndpointMapper
         mouse.MapPost("/move", (MouseMoveRequest req, IMouseService service) => {
             service.MoveMouseBy(req.Dx, req.Dy);
             return Results.Ok();
+        });
+        
+        // --- Saved Sites ---
+        var sites = api.MapGroup("/sites");
+        
+        sites.MapGet("", async (AppDbContext db) =>
+        {
+            var savedSites = await db.SavedSites.ToListAsync();
+            return Results.Ok(savedSites);
+        });
+
+        sites.MapPost("", async (SavedSite site, AppDbContext db) =>
+        {
+            db.SavedSites.Add(site);
+            await db.SaveChangesAsync();
+            return Results.Ok(site);
+        });
+
+        sites.MapDelete("/{id:int}", async (int id, AppDbContext db) =>
+        {
+            var site = await db.SavedSites.FindAsync(id);
+            if (site is null) return Results.NoContent();
+            
+            db.SavedSites.Remove(site);
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        });
+
+        sites.MapPost("/launch", (LaunchRequest req) =>
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = req.Url,
+                    UseShellExecute = true
+                });
+
+                return Results.Ok();
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
         });
         
         // --- System ---

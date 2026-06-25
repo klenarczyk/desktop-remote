@@ -61,6 +61,30 @@ export const RemoteApi = {
             }),
     },
 
+    sites: {
+        getAll: () =>
+            fetch(`${API_BASE}/sites`, {
+                headers: getHeaders(),
+            }).then((res) => res.json()),
+        add: (name: string, url: string) =>
+            fetch(`${API_BASE}/sites`, {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify({ name, url }),
+            }).then((res) => res.json()),
+        remove: (id: number) =>
+            fetch(`${API_BASE}/sites/${id}`, {
+                method: "DELETE",
+                headers: getHeaders(),
+            }),
+        launch: (url: string) =>
+            fetch(`${API_BASE}/sites/launch`, {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify({ url }),
+            }),
+    },
+
     system: {
         turnOff: () =>
             fetch(`${API_BASE}/system/turn-off`, {

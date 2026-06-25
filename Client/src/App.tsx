@@ -18,12 +18,14 @@ import useRemoteServer from "./hooks/useRemoteServer";
 import Keyboard from "./components/Keyboard";
 import { useEffect, useState } from "react";
 import DevicePairing from "./components/DevicePairing";
+import SavedSitesDrawer from "./components/SavedSitesDrawer";
 
 function App() {
     const [isPinging, setIsPinging] = useState(true);
     const [isAuthorized, setisAuthorized] = useState(false);
 
     const { connection, isConnected } = useRemoteServer(isAuthorized);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     useEffect(() => {
         RemoteApi.ping()
@@ -66,6 +68,10 @@ function App() {
 
     return (
         <div className="flex flex-col h-dvh max-w-md mx-auto p-6 gap-6">
+            {isDrawerOpen && (
+                <SavedSitesDrawer onClose={() => setIsDrawerOpen(false)} />
+            )}
+
             {/* Header */}
             <header className="flex justify-between items-center mt-2">
                 <div className="flex items-center gap-2">
@@ -81,7 +87,7 @@ function App() {
                     <RemoteButton
                         variant="ghost"
                         className="w-12 h-12 rounded-full border border-zinc-800"
-                        onClick={() => alert("TODO: Open Saved Sites Modal")}
+                        onClick={() => setIsDrawerOpen(true)}
                         disabled={!isConnected}
                     >
                         <Bookmark size={20} className="text-zinc-400" />
