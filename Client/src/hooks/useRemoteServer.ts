@@ -7,13 +7,15 @@ const HUB_URL = isDev
     ? `http://${window.location.hostname}:${import.meta.env.VITE_SERVER_PORT}/remoteHub?deviceId=${getDeviceId()}`
     : `/remoteHub?deviceId=${getDeviceId()}`;
 
-export default function useRemoteServer() {
+export default function useRemoteServer(shouldConnect: boolean) {
     const [connection, setConnection] = useState<signalR.HubConnection | null>(
         null,
     );
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
+        if (!shouldConnect) return;
+
         let isMounted = true;
 
         const newConn = new signalR.HubConnectionBuilder()
@@ -42,7 +44,7 @@ export default function useRemoteServer() {
             newConn.stop();
             setIsConnected(false);
         };
-    }, []);
+    }, [shouldConnect]);
 
     return { connection, isConnected };
 }

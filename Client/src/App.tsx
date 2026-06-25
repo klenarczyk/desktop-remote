@@ -20,10 +20,10 @@ import { useEffect, useState } from "react";
 import DevicePairing from "./components/DevicePairing";
 
 function App() {
-    const { connection, isConnected } = useRemoteServer();
-
     const [isPinging, setIsPinging] = useState(true);
     const [isAuthorized, setisAuthorized] = useState(false);
+
+    const { connection, isConnected } = useRemoteServer(isAuthorized);
 
     useEffect(() => {
         RemoteApi.ping()
