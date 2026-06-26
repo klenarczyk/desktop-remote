@@ -68,12 +68,14 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowAll");
+app.UseStaticFiles();
 
 app.Use(async (_, next) =>
 {
     idleTimer.Stop();
     idleTimer.Start();
     await next();
+    return;
 });
 
 app.Use(async (context, next) =>
@@ -112,7 +114,7 @@ app.Use(async (_, next) =>
     await next();
 });
 
-app.UseStaticFiles();
+// ---
 
 app.MapHub<RemoteHub>("/remoteHub");
 app.MapRemoteEndpoints();

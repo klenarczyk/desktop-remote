@@ -21,6 +21,7 @@ export default function useRemoteServer(shouldConnect: boolean) {
         const newConn = new signalR.HubConnectionBuilder()
             .withUrl(HUB_URL)
             .withAutomaticReconnect()
+            .configureLogging(signalR.LogLevel.Warning)
             .build();
 
         newConn
