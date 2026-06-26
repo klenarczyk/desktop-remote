@@ -1,4 +1,7 @@
-﻿using QRCoder;
+﻿using Api.Data;
+using Api.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using QRCoder;
 
 namespace Api;
 
@@ -8,7 +11,7 @@ public class TrayUi : ApplicationContext
     private readonly Form _qrPopup;
     private static TrayUi? _instance;
 
-    public TrayUi(string url, string pairingPin)
+    public TrayUi(string url, string pairingPin, IServiceProvider services)
     {
         _instance = this;
         
@@ -44,11 +47,60 @@ public class TrayUi : ApplicationContext
             ContextMenuStrip = new ContextMenuStrip()
         };
         
-        var trayPairingPin = _trayIcon.ContextMenuStrip.Items.Add($"Pairing Pin: {pairingPin}", null);
-        _trayIcon.ContextMenuStrip.Items.Add("Show QR Code", null, (s, e) => _qrPopup.Show());
-        _trayIcon.ContextMenuStrip.Items.Add("Exit", null, (s, e) => ExitApp());
+        _trayIcon.ContextMenuStrip.Items.Add($"Pairing Pin: {pairingPin}", null).Enabled = false;
+        _trayIcon.ContextMenuStrip.Items.Add("QR Code", null, (s, e) => _qrPopup.Show());
         
-        trayPairingPin.Enabled = false;
+        _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+
+        var devicesMenu = new ToolStripMenuItem("Paired Devices");
+
+        devicesMenu.DropDownOpening += (s, e) =>
+        {
+            devicesMenu.DropDownItems.Clear();
+            
+            using var scope = services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var devices = db.TrustedDevices
+                .OrderBy(d => d.DeviceName)
+                .ThenBy(d => d.PairedAt)
+                .ToList();
+
+            if (devices.Count == 0)
+            {
+                devicesMenu.DropDownItems.Add("No devices paired").Enabled = false;
+                return;
+            }
+
+            foreach (var device in devices)
+            {
+                var itemText = $"Revoke: {device.DeviceName} ({device.PairedAt:MMM dd})";
+                var item = new ToolStripMenuItem(itemText);
+
+                item.Click += (sender, args) =>
+                {
+                    using var deleteScope = services.CreateScope();
+                    var deleteDb = deleteScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    var hubContext = deleteScope.ServiceProvider.GetRequiredService<IHubContext<RemoteHub>>();
+                    
+                    var toDelete = deleteDb.TrustedDevices.Find(device.Id);
+                    if (toDelete != null)
+                    {
+                        var targetDeviceId = toDelete.DeviceId;
+                        
+                        deleteDb.TrustedDevices.Remove(toDelete);
+                        deleteDb.SaveChanges();
+
+                        hubContext.Clients.User(targetDeviceId).SendAsync("RevokeAccess");
+                    }
+                };
+
+                devicesMenu.DropDownItems.Add(item);
+            }
+        };
+        
+        _trayIcon.ContextMenuStrip.Items.Add(devicesMenu);
+        _trayIcon.ContextMenuStrip.Items.Add("Exit", null, (s, e) => ExitApp());
         
         _qrPopup.Show();
         

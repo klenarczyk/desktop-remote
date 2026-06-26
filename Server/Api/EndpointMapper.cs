@@ -10,7 +10,7 @@ namespace Api;
 
 public static class EndpointMapper
 {
-    record PairRequest(string DeviceId, string Pin);
+    record PairRequest(string DeviceId, string Pin, string DeviceName);
     record MouseMoveRequest(int Dx, int Dy);
     record LaunchRequest(string Url);
     
@@ -133,7 +133,7 @@ public static class EndpointMapper
 
             if (!await db.TrustedDevices.AnyAsync(d => d.DeviceId == req.DeviceId))
             {
-                db.TrustedDevices.Add(new TrustedDevice { DeviceId = req.DeviceId });
+                db.TrustedDevices.Add(new TrustedDevice { DeviceId = req.DeviceId, DeviceName = req.DeviceName });
                 await db.SaveChangesAsync();
             }
 

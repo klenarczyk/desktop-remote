@@ -6,6 +6,7 @@ public class TrustedDevice
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string DeviceId { get; set; } = string.Empty;
+    public string DeviceName { get; set; } = "Unknown Device";
     public DateTime PairedAt { get; set; } = DateTime.UtcNow;
 }
 

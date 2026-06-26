@@ -10,6 +10,15 @@ const getHeaders = () => ({
     "X-Device-Id": getDeviceId(),
 });
 
+const getDeviceName = () => {
+    const ua = navigator.userAgent;
+    if (/android/i.test(ua)) return "Android Phone";
+    if (/iphone|ipad|ipod/i.test(ua)) return "iPhone/iPad";
+    if (/windows/i.test(ua)) return "Windows PC";
+    if (/mac/i.test(ua)) return "Mac";
+    return "Unknown Device";
+};
+
 export const RemoteApi = {
     media: {
         toggle: () =>
@@ -96,7 +105,11 @@ export const RemoteApi = {
             fetch(`${API_BASE}/system/pair`, {
                 method: "POST",
                 headers: getHeaders(),
-                body: JSON.stringify({ deviceId: getDeviceId(), pin }),
+                body: JSON.stringify({
+                    deviceId: getDeviceId(),
+                    pin,
+                    deviceName: getDeviceName(),
+                }),
             }),
     },
 

@@ -43,6 +43,18 @@ function App() {
             .finally(() => setIsPinging(false));
     }, []);
 
+    useEffect(() => {
+        if (!connection) return;
+
+        connection.on("RevokeAccess", () => {
+            setisAuthorized(false);
+        });
+
+        return () => {
+            connection.off("RevokeAccess");
+        };
+    }, [connection]);
+
     const sendKey = (key: string) => {
         if (!connection) return;
         connection.invoke("TypeText", key).catch(console.error);

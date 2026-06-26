@@ -6,6 +6,7 @@ using Api.Features.MediaControl;
 using Api.Features.MouseControl;
 using Api.Hubs;
 using Api.Security;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Timer = System.Timers.Timer;
 
@@ -17,6 +18,7 @@ var sessionState = new SessionState();
 builder.Services.AddSingleton(sessionState);
 
 builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddSingleton<IUserIdProvider, DeviceIdProvider>();
 builder.Services.AddSignalR();
 
 builder.WebHost.UseUrls($"http://0.0.0.0:{serverPort}");
@@ -74,12 +76,6 @@ app.Use(async (_, next) =>
     await next();
 });
 
-app.Use(async (_, next) =>
-{
-    TrayUi.HidePopup();
-    await next();
-});
-
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path.Value;
@@ -110,6 +106,12 @@ app.Use(async (context, next) =>
     return;
 });
 
+app.Use(async (_, next) =>
+{
+    TrayUi.HidePopup();
+    await next();
+});
+
 app.UseStaticFiles();
 
 app.MapHub<RemoteHub>("/remoteHub");
@@ -124,4 +126,4 @@ _ = app.RunAsync();
 Application.EnableVisualStyles();
 Application.SetCompatibleTextRenderingDefault(false);
 
-Application.Run(new TrayUi(url, sessionState.PairingPin));
+Application.Run(new TrayUi(url, sessionState.PairingPin, app.Services));
