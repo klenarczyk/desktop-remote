@@ -75,7 +75,6 @@ app.Use(async (_, next) =>
     idleTimer.Stop();
     idleTimer.Start();
     await next();
-    return;
 });
 
 app.Use(async (context, next) =>
@@ -105,7 +104,6 @@ app.Use(async (context, next) =>
     }
     
     await next();
-    return;
 });
 
 app.Use(async (_, next) =>

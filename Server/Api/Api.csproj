@@ -11,9 +11,14 @@
     
     <UseWindowsForms>true</UseWindowsForms>
     <FrontendRoot>..\..\Client</FrontendRoot>
+    
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
-  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+  <Target Name="BuildFrontend" BeforeTargets="Build,Publish" Condition="'$(Configuration)' == 'Release'">
     <Message Importance="high" Text="Building React frontend..." />
 
     <Exec Command="npm install" WorkingDirectory="$(FrontendRoot)" />
@@ -27,10 +32,10 @@
     
     <Copy SourceFiles="@(DistFiles)" DestinationFolder="wwwroot\%(RecursiveDir)" />
 
-    <Message Importance="high" Text="Frontend build complete." /></Target>
+    <Message Importance="high" Text="Frontend build complete." />
+  </Target>
   
   <ItemGroup>
-    <Folder Include="wwwroot\" />
     <EmbeddedResource Include="app.ico" />
   </ItemGroup>
 
