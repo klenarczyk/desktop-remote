@@ -24,6 +24,13 @@ public class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite("Data Source=remote.db");
+        var folder = Environment.SpecialFolder.LocalApplicationData;
+        var appDataPath = Environment.GetFolderPath(folder);
+
+        var dbFolder = Path.Join(appDataPath, "DesktopRemote");
+        Directory.CreateDirectory(dbFolder);
+
+        var dbPath = Path.Join(dbFolder, "remote.db");
+        options.UseSqlite($"Data Source={dbPath}");
     }
 }

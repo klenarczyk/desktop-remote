@@ -100,7 +100,16 @@ public class TrayUi : ApplicationContext
         };
         
         _trayIcon.ContextMenuStrip.Items.Add(devicesMenu);
-        _trayIcon.ContextMenuStrip.Items.Add("Exit", null, (s, e) => ExitApp());
+        _trayIcon.ContextMenuStrip.Items.Add("Open Data Folder", null, (s, e) =>
+        {
+            var folder = Environment.SpecialFolder.LocalApplicationData;
+            var appDataPath = Environment.GetFolderPath(folder);
+            var dbFolder = Path.Join(appDataPath, "DesktopRemote");
+
+            if (!Directory.Exists(dbFolder)) return;
+            System.Diagnostics.Process.Start("explorer.exe", dbFolder);
+        });
+        _trayIcon.ContextMenuStrip.Items.Add("Stop Server", null, (s, e) => ExitApp());
         
         _qrPopup.Show();
         
